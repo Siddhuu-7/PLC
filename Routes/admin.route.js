@@ -7,7 +7,7 @@ import jwt from "jsonwebtoken"
 import jwtToken from '../Middlewares/jwtmiddleware.js'
 import AdminauthController from "../controllers/admin.auth.controller.js";
 const upload=multer({storage:multer.memoryStorage()})
-
+import adminUpdateCotroller from "../controllers/adminUpdate.cotroller.js";
 Router.post("/signUp",upload.single('userImg'), async (req, res) => {
   try {
     const body = req.body;
@@ -44,4 +44,5 @@ Router.post("/signUp",upload.single('userImg'), async (req, res) => {
   }
 });
 Router.get("/login",jwtToken,AdminauthController)
+Router.put('/update',adminUpdateCotroller)
 export default Router;

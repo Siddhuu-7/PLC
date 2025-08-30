@@ -1,4 +1,4 @@
-import { Fileparser } from "../utils/fileTotext";
+import { Fileparser } from "../utils/fileTotext.js";
 export default function (req, res, next) {
   try {
     if (!req.file || !req.file.buffer) {

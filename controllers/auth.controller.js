@@ -33,7 +33,7 @@ const data = await User.findOne({
             }
             const isMatch = await bcrypt.compare(password, data.password);
             if(!isMatch){
-                return res.status(200).json({msg:"password not matcheed"})
+                return res.status(200).json({msg:false})
             }
               const token = jwt.sign(
                   { userId: data.registerNumber },
@@ -56,4 +56,13 @@ const data = await User.findOne({
         res.status(500).json({msg:error.message})
     }
 }
-export default authController
+async function userDetails(req,res,next) {
+  try {
+    const {registerNumber}=req.params
+    const data=await User.findOne({registerNumber})
+    res.status(200).json({data})
+  } catch (error) {
+    res.status(500).json({msg:error.message})
+  }
+}
+export { authController,userDetails}

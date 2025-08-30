@@ -1,7 +1,5 @@
-import { Json } from "sequelize/lib/utils"
-import { User ,NOSQLUSER} from "../Models/users.model.js"
 import bcrypt from "bcrypt"
-
+import {Admin,NOSQLUSER} from "../Models/admin.model.js"
 export default async function (req, res, next) {
   try {
     const { userId, place } = req.body
@@ -9,7 +7,9 @@ export default async function (req, res, next) {
     switch (place) {
       case "mobileNumber": {
         const  mobileNumber  = req.body.mobileNumber
-        await User.update(
+        
+        
+        await Admin.update(
           { mobileNumber }, 
           { where: { registerNumber:userId } } 
         )
@@ -19,11 +19,11 @@ export default async function (req, res, next) {
       case "password": {
         const  password  = req.body.password
         const hashpassword = await bcrypt.hash(password, 10)
-        await User.update(
+        await Admin.update(
           { password: hashpassword }, 
           { where: { registerNumber:userId } } 
         )
-        break
+        break;
       }
       case "userImg":{
         const userImg=req.file.buffer;
@@ -32,19 +32,13 @@ export default async function (req, res, next) {
     { userImg },             
     { new: true, upsert: true } // return updated doc, create if not exists
   )
-        await User.update(
+        await Admin.update(
           {userImg:userImgId._id},
           { where: { registerNumber:userId } } 
         )
-      }
-      case "courses":{
-        let courses=req.body.courses
-       
-        await User.update({courses:courses},{
-          where:{registerNumber:userId}
-        })
         break;
       }
+     
       default:
         return res.status(400).json({ msg: "Invalid update field" })
     }
