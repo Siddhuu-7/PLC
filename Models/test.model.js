@@ -23,7 +23,16 @@ const testSchema=new mongoose.Schema({
         type:String,
         required:true,
     },
-    test:[questionsSchema]
+    testSubject:{
+        type:String,
+        required:true
+    },
+    test:[questionsSchema],
+    questions:{
+        type:Number,
+        required:true
+    }
+
 })
 const testModel=mongoose.model("test",testSchema)
 export  default testModel;

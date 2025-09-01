@@ -10,7 +10,9 @@ Router.post("/",upload.single("file"), FileTotextMiddleware, async (req, res) =>
   try {
     const testId=req.body.testId
     const testName=req.body.testName
+    const testSubject=req.body.testSubject
     const  questionsArray  = req.body.fileText;
+    const questions=req.body.questions
 
     if (!questionsArray) {
       return res.status(400).json({ msg: "No data found in file" });
@@ -18,7 +20,9 @@ Router.post("/",upload.single("file"), FileTotextMiddleware, async (req, res) =>
     const testDoc = new TestModel({
       testId:testId,
       testName:testName,
-       test: questionsArray });
+      testSubject,
+       test: questionsArray,
+      questions });
     await testDoc.save();
 
     res.status(201).json({ msg: "Questions saved successfully", testData: testDoc });
@@ -27,6 +31,6 @@ Router.post("/",upload.single("file"), FileTotextMiddleware, async (req, res) =>
     res.status(500).json({ msg: error.message });
   }
 });
-Router.get('/test/:testId',testMiddleware)
+Router.get('/test',testMiddleware)
 Router.get("/alltests",alltestsMiddleware)
 export default Router;

@@ -3,19 +3,19 @@ import dotenv from "dotenv";
 dotenv.config();
 
 function jwtMiddleware(req, res, next) {
+  const token = req.cookies?.token;
+
+  if (!token) {
+    return next();
+  }
+
   try {
-    const token = req.cookies.token;
-
-    if (!token) {
-      return next();
-    }
-
     const decoded = jwt.verify(token, process.env.SECREATE_KEY);
     req.user = decoded;
-
+    console.log("Decoded token:", decoded);
     return next();
   } catch (error) {
-    console.log("JWT error:", error.message);
+    console.error("JWT error:", error.message);
     return res.status(403).json({ msg: "Invalid or expired token" });
   }
 }

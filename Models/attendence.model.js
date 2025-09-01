@@ -11,14 +11,15 @@ const attendence=sequelize.define("attendences",{
         type:DataTypes.STRING,
         allowNull:false
     },
+    classattend:{
+        type:DataTypes.INTEGER,
+        allowNull:true
+    },
     classHeld:{
         type:DataTypes.INTEGER,
         allowNull:true
     },
-    classattend:{
-        type:DataTypes.INTEGER,
-        allowNull:true
-    }
+    
 
 })
 

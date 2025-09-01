@@ -39,6 +39,18 @@ async function updateClassDone(req, res, next) {
         res.status(500).json({ msg: error.message });
     }
 }
+async function addToAtttendence(req,res,next){
+    try {
+        const userName=req.body.firstName+req.body.lastName
+        const registerNumber=req.body.registerNumber
+        let classData = await classDoneModel.findOne({ className:"PLC" });
+        const classHeld=classData.classDone
+        let classattend=0
+        await attendence.create({userName,registerNumber,classattend,classHeld})
+        next()
+    } catch (error) {
+        res.status(500).json({msg:error.message})
+    }
+}
 
-
-export {postAttendence,updateClassDone}
+export {postAttendence,updateClassDone,addToAtttendence}

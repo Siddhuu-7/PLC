@@ -4,44 +4,44 @@ import bcrypt from "bcrypt"
 
 export default async function (req, res, next) {
   try {
-    const { userId, place } = req.body
-
+    const { registerNumber, place } = req.body
     switch (place) {
       case "mobileNumber": {
-        const  mobileNumber  = req.body.mobileNumber
+        const  mobileNumber  = req.body.field
         await User.update(
           { mobileNumber }, 
-          { where: { registerNumber:userId } } 
+          { where: { registerNumber } } 
         )
         break
       }
 
       case "password": {
-        const  password  = req.body.password
+        const  password  = req.body.field
         const hashpassword = await bcrypt.hash(password, 10)
         await User.update(
           { password: hashpassword }, 
-          { where: { registerNumber:userId } } 
+          { where: { registerNumber } } 
         )
         break
       }
       case "userImg":{
         const userImg=req.file.buffer;
         const userImgId=await NOSQLUSER.findOneAndUpdate(
-    { userId },             
+    { userId:registerNumber },             
     { userImg },             
     { new: true, upsert: true } // return updated doc, create if not exists
   )
         await User.update(
-          {userImg:userImgId._id},
-          { where: { registerNumber:userId } } 
+          {userImg:userImgId._id.toString()},
+          { where: { registerNumber } } 
         )
+        break;
       }
       case "courses":{
-        let courses=req.body.courses
+        let courses=req.body.field
        
         await User.update({courses:courses},{
-          where:{registerNumber:userId}
+          where:{registerNumber}
         })
         break;
       }
