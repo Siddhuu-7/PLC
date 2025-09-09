@@ -5,6 +5,7 @@ import { attendence } from '../Models/attendence.model.js';
 async function authController(req,res,next){
     try {
         const decoded=req.user
+        console.log(decoded)
         if(decoded.token){
             const token = jwt.sign(
                   { token: decoded.token },
@@ -43,11 +44,11 @@ async function loginController(req,res,next) {
             });       
                
                 if(!data){
-                return res.status(200).status({msg:"no user Found"})
+                return res.status(400).status({msg:"no user Found"})
             }
             const isMatch = await bcrypt.compare(password, data.password);
             if(!isMatch){
-                return res.status(200).json({msg:"password Not matched"})
+                return res.status(400).json({msg:"password Not matched"})
             }
               const token = jwt.sign(
                   { token: data.registerNumber },
@@ -72,12 +73,19 @@ async function loginController(req,res,next) {
 }
 async function userDetails(req,res,next) {
   try {
-    const {registerNumber}=req.params
-const data = await User.findOne({
+    const {registerNumber}=req.query
+      if(registerNumber){
+        const data = await User.findOne({
   where: { registerNumber },
   attributes: { exclude: ['password'] }
 });
     res.status(200).json({data})
+      }else{
+        const data = await User.findAll({
+          where:{}
+});
+    res.status(200).json({data})
+      }
   } catch (error) {
     res.status(500).json({msg:error.message})
   }
@@ -85,6 +93,7 @@ const data = await User.findOne({
 async function picsController(req,res,next) {
   try {
 const registerNumber = req.query.registerNumber
+console.log(registerNumber)
     const data=await NOSQLUSER.findOne({userId:registerNumber},{userImg:1})
     res.set("Content-Type", "image/png"); 
     res.send(data.userImg);
@@ -119,7 +128,6 @@ res.clearCookie("registerNumber", {
 });
 res.status(200).json({ msg: "cleared" });
 
-    res.status(200).json({msg:"cleared"})
   } catch (error) {
     res.status(500).json({msg:error.message})
   }

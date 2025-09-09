@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BookOpen, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-
+import axios from 'axios';
 export default function Landingpage() {
   const quotes = [
     "Education is the most powerful weapon which you can use to change the world.",
@@ -14,7 +14,32 @@ export default function Landingpage() {
   const navigation=useNavigate()
   const [currentQuote, setCurrentQuote] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
+      useEffect(() => {
+    const checkLogin = async () => {
+      try {
+         const cookies = Object.fromEntries(
+          document.cookie.split("; ").map(c => c.split("="))
+        );
+        if(cookies.token){
+          const res = await axios.get(
+          `${import.meta.env.VITE_backend_Url}/api/users/autologin`,
+          { withCredentials: true }
+        );
 
+        if (res.data?.msg) {
+          navigation("/home");
+        } else {
+          navigation("/");
+        }
+        }
+      } catch (error) {
+        console.error("Auto login failed:", error.message);
+        navigation("/");
+      }
+    };
+
+    checkLogin();
+  }, [navigation]);
   useEffect(() => {
     const interval = setInterval(() => {
       setIsVisible(false);

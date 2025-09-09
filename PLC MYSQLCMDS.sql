@@ -41,6 +41,7 @@ create table attendences(
 id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 userName VARCHAR(255) NOT NULL,
  registerNumber VARCHAR(255) NOT NULL,
+ year INt not null,
  classattend int,
   classHeld Int,
  createdAt DATETIME NOT NULL,

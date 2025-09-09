@@ -1,18 +1,20 @@
 import express from "express";
 const Router = express.Router();
-import {User,NOSQLUSER} from '../Models/users.model.js';
+import {NOSQLUSER} from '../Models/users.model.js';
 import multer from "multer";
 import bcrypt from 'bcrypt';
 import jwt from "jsonwebtoken"
 import jwtToken from '../Middlewares/jwtmiddleware.js'
 import {authController,userDetails,loginController,picsController,getAttendence,clearCookies} from "../controllers/auth.controller.js";
 import updateController from "../controllers/update.controller.js";
-import {postAttendence,updateClassDone,addToAtttendence} from "../controllers/attendence.controller.js";
+import {postAttendence,updateClassDone,addToAtttendence,StudentListController} from "../controllers/attendence.controller.js";
+import {partialUser} from "../Models/partialUser.model.js"
 const upload=multer({storage:multer.memoryStorage()})
 
-Router.post("/signUp",upload.single('userImg'),addToAtttendence, async (req, res) => {
+Router.post("/signUp",upload.single('userImg'), addToAtttendence,async (req, res) => {
   try {
     const body = req.body;
+    console.log(body)
     if (!body || Object.keys(body).length === 0) {
       return res.status(400).json({ msg: "No data found" });
     }
@@ -25,8 +27,8 @@ Router.post("/signUp",upload.single('userImg'),addToAtttendence, async (req, res
       userImg:req.file?req.file.buffer:null})
     await NoSQL.save()
     const imgId= await NOSQLUSER.findOne({userId:body.registerNumber},{_id:1,userId:0,userImg:0})
-    body.userImg=imgId._id.toString()
-    const newUser = await User.create(body);
+    body.userImg=imgId.userId
+    const newUser = await partialUser.create(body);
      const token = jwt.sign(
       { userId: body.registerNumber },
       process.env.SECREATE_KEY,
@@ -37,7 +39,7 @@ Router.post("/signUp",upload.single('userImg'),addToAtttendence, async (req, res
     sameSite: "lax",
     maxAge: 21*24*60*60*1000, 
   });
-  res.cookie("userId",body.registerNumber,{
+  res.cookie("registerNumber",body.registerNumber,{
     httpOnly:false
   })
     res.status(201).json({
@@ -52,10 +54,11 @@ Router.post("/signUp",upload.single('userImg'),addToAtttendence, async (req, res
 Router.get("/autologin",jwtToken,authController)
 Router.post('/login',loginController)
 Router.put('/update',upload.single("file"),updateController)
-Router.get("/details/:registerNumber",userDetails)
+Router.get("/details",userDetails)
 Router.put("/attendence",postAttendence)
 Router.get("/getattendence",getAttendence)
 Router.get("/pics",picsController)
 Router.get("/updateclass",updateClassDone)
 Router.get("/clearcookie",clearCookies)
+Router.get("/studentlist",StudentListController)
 export default Router;

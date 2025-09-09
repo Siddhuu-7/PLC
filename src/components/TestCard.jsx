@@ -1,8 +1,8 @@
 
 import { Play,Clock,CheckCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 export default function TestCard({ quiz }) {
   if (!quiz) return null;
-
   const status = quiz.status || "available"; 
 
   return (
@@ -25,7 +25,7 @@ export default function TestCard({ quiz }) {
             ? "bg-gray-300 text-gray-600 cursor-not-allowed"
             : "bg-orange-500 text-white hover:bg-orange-600"
         }`}
-     onClick={() => window.open(`${import.meta.env.VITE_backend_Url}/mcqs?testId=${quiz.testId}`, "_blank")}
+     onClick={()=>  window.open(`/mcqs?testId=${quiz.testId}`, "_blank")}
 
       >
         {status === "available" && "START NOW"}

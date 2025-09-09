@@ -1,13 +1,34 @@
-import testModel from "../Models/test.model.js"
-export default async function(req,res,next){
-    try {
-        const testId=req.query.testId
-        const testData=await testModel.find({testId})
-        if(!testData){
-            return res.status(200).json({msg:"can Find Test"})
-        }
-        res.status(200).json({data:testData[0]})
-    } catch (error) {
-        res.status(404).json({msg:error.message})
+import testModel from "../Models/test.model.js";
+
+ async function testMiddleware(req, res, next) {
+  try {
+    const testId = req.query.testId;
+
+    const testData = await testModel.findOne({ testId });
+
+    if (!testData) {
+      return res.status(404).json({ msg: "Test not found" });
     }
+
+   
+
+    res.status(200).json(testData);
+  } catch (error) {
+    res.status(500).json({ msg: error.message });
+  }
 }
+async function codeRunnerMiddleWare(req,res,next) {
+  try {
+    console.log(req.body)
+  } catch (error) {
+      res.status(500).json({ msg: error.message });
+  }
+}
+async function codeSubmitMiddleWare(req,res,next) {
+  try {
+    console.log(req.body)
+  } catch (error) {
+      res.status(500).json({ msg: error.message });
+  }
+}
+export {codeRunnerMiddleWare,testMiddleware,codeSubmitMiddleWare}

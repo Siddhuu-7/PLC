@@ -8,9 +8,10 @@ import mongoose from 'mongoose'
 import cookieParser from "cookie-parser";
 import Test from "./Routes/test.route.js"
 import Admin from "./Routes/admin.route.js"
+import resource from "./Routes/resource.route.js"
 dotenv.config();
-
-mongoose.connect("mongodb://localhost:27017/PLC")
+import Socket from "./Socket/socket.js"
+mongoose.connect(process.env.MONGODBSTRING)
   .then(() => console.log("noSQL connected"))
   .catch(error => console.log(error.message));
 
@@ -30,14 +31,16 @@ app.use(cors({
   credentials: true
 }));
 
+
 app.use("/api/users", User);
 app.use("/api/questions", Test);
 app.use("/api/admin",Admin)
+app.use("/api/resource",resource)
 try {
-  sequelize.authenticate()
+  sequelize.authenticate({force:true})
     .then(() => console.log("SQL authenticated"))
     .catch(error => console.log(error.message));
-  // sequelize.sync({ alter: true });
+  sequelize.sync();
 } catch (error) {
   console.log("mysql:", error.message);
 }
@@ -81,13 +84,18 @@ app.get('*all', async (req, res, next) => {
       template = templateHtml;
       render = (await import('./dist/server/entry-server.js')).render;
     }
-
-    const rendered = await render(url);
+const initialData = {
+      time: Date.now()
+    };
+    const rendered = await render(url,initialData);
 
     const html = template
       .replace(`<!--app-head-->`, rendered.head ?? '')
-      .replace(`<!--app-html-->`, rendered.html ?? '');
-
+      .replace(`<!--app-html-->`, rendered.html ?? '')
+       .replace(
+        `<!--initial-data-->`,
+        `<script>window.__INITIAL_DATA__ = ${JSON.stringify(initialData)}</script>`
+      );
     res.status(200).set({ 'Content-Type': 'text/html' }).send(html);
   } catch (e) {
     vite?.ssrFixStacktrace(e);
@@ -96,7 +104,6 @@ app.get('*all', async (req, res, next) => {
   }
 });
 
-// Start http server
-app.listen(port, () => {
-  console.log(`Server started at http://localhost:${port}`);
-});
+const socket=new Socket(app,port)
+socket.startSocket()
+socket.startServer()

@@ -22,9 +22,12 @@ const User=sequelize.define("User",{
         type:DataTypes.STRING,
         allowNull:false
     },
-    mobileNumber:{
-        type:DataTypes.NUMBER
-    },
+    mobileNumber: {
+  type: DataTypes.STRING,   
+  allowNull: false
+}
+,
+    gmail:{type:DataTypes.STRING},
     year:{
         type:DataTypes.INTEGER,
         allowNull:false

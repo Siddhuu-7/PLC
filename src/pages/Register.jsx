@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Upload, User, Phone, Calendar, BookOpen, Camera } from 'lucide-react';
+import { Upload, User, Phone, Calendar, BookOpen, Camera ,Mail} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 export default function StudentRegistration() {
@@ -11,6 +11,7 @@ export default function StudentRegistration() {
     confirmPassword: '',
     branch: '',
     mobileNumber: '',
+    gmail:"",
     year: '',
     userImg: null,
     courses: []
@@ -134,6 +135,7 @@ export default function StudentRegistration() {
       data.append('password', formData.password);
       data.append('branch', formData.branch);
       data.append('mobileNumber', formData.mobileNumber);
+      data.append("gmail",formData.gmail)
       data.append('year', formData.year);
       data.append('userImg', formData.userImg); 
       formData.courses.forEach((course, idx) =>
@@ -153,7 +155,7 @@ export default function StudentRegistration() {
 
       alert('Registration successful! Welcome to PLC.');
       if(res.data.msg){
-        naviagtion("/home")
+        naviagtion("/verfiy")
       }else{
               alert('Registration failed. Please try again.');
 
@@ -277,6 +279,7 @@ export default function StudentRegistration() {
                     name="mobileNumber"
                     value={formData.mobileNumber}
                     onChange={handleInputChange}
+                    required
                     className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                       errors.mobileNumber ? 'border-red-500' : 'border-gray-300'
                     }`}
@@ -284,6 +287,23 @@ export default function StudentRegistration() {
                     maxLength="10"
                   />
                   {errors.mobileNumber && <p className="text-red-500 text-sm mt-1">{errors.mobileNumber}</p>}
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 mb-2 font-sans tracking-wide uppercase">
+                    <Mail className="w-4 h-4 inline mr-2" />
+                    Gmail *
+                  </label>
+                  <input
+                    type="email"
+                    name="gmail"
+                    value={formData.gmail}
+                    onChange={handleInputChange}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                      errors.gmail ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                    placeholder="Enter your example@gmail.com"
+                  required/>
+                  {errors.gmail && <p className="text-red-500 text-sm mt-1">{errors.gmail}</p>}
                 </div>
 
                 <div>
