@@ -15,7 +15,7 @@ const sequelize = new Sequelize(
     logging: false,
     dialectOptions: {
       ssl: {
-        ca: process.env.NODE_ENV==="production"?fs.readFileSync("./etc/secrets/ca.pem"):fs.readFileSync("./ca.pem"),
+        ca: process.env.NODE_ENV==="production"?fs.readFileSync("/etc/secrets/ca.pem"):fs.readFileSync("./ca.pem"),
         rejectUnauthorized: true
       },
       connectTimeout: 20000
