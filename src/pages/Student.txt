@@ -1,0 +1,24 @@
+  useEffect(() => {
+    async function FetchTest() {
+      try {
+        if(preview){
+          const res = await axios.get(
+          `${import.meta.env.VITE_backend_Url}/api/questions/test/?testId=${21}`
+        );
+
+        const data = res.data;
+        setTestData(data);
+        }else{
+          setTestData(testdata)
+        }
+
+        setTimeLeft(data.duration * 60);
+        setAllQuestions([...data.questions, ...data.programmingProblems]);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    FetchTest();
+  }, []);

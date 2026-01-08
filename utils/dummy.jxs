@@ -1,0 +1,627 @@
+import React, { useState } from 'react';
+import { User, Calendar, Clock, Mail, Phone, MapPin, CheckCircle, XCircle, Eye, BookOpen, GraduationCap, TrendingUp, Users, BarChart3 } from 'lucide-react';
+
+// UserCard Component
+const UserCard = ({ user, onUpdateAttendance, onViewDetails }) => {
+  const getAttendanceColor = (status) => {
+    switch (status) {
+      case 'present': return 'bg-green-100 text-green-800 border-green-200';
+      case 'absent': return 'bg-red-100 text-red-800 border-red-200';
+      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
+  };
+
+  const getAttendanceIcon = (status) => {
+    switch (status) {
+      case 'present': return <CheckCircle className="w-4 h-4" />;
+      case 'absent': return <XCircle className="w-4 h-4" />;
+      default: return <Clock className="w-4 h-4" />;
+    }
+  };
+
+  const fullName = `${user.firstName} ${user.lastName}`;
+
+  return (
+    <div className="bg-white rounded-lg shadow-md border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+      {/* User Header */}
+      <div className="flex items-center mb-4">
+        <div className="w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold text-lg overflow-hidden">
+          {user.userImg ? (
+            <img 
+              src={user.userImg} 
+              alt={fullName}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+              {user.firstName.charAt(0).toUpperCase()}
+            </div>
+          )}
+        </div>
+        <div className="ml-3 flex-1">
+          <h3 className="text-lg font-semibold text-gray-900">{fullName}</h3>
+          <p className="text-sm text-gray-600">Reg: {user.registerNumber}</p>
+          <p className="text-xs text-gray-500">{user.branch} • Year {user.year}</p>
+        </div>
+        <div className={`px-3 py-1 rounded-full text-xs font-medium border ${getAttendanceColor(user.attendanceStatus)}`}>
+          <span className="flex items-center gap-1">
+            {getAttendanceIcon(user.attendanceStatus)}
+            {user.attendanceStatus || 'Not marked'}
+          </span>
+        </div>
+      </div>
+
+      {/* Quick Info */}
+      <div className="mb-4 space-y-2">
+        <div className="flex items-center text-sm text-gray-600">
+          <Phone className="w-4 h-4 mr-2" />
+          {user.mobileNumber || 'N/A'}
+        </div>
+        <div className="flex items-center text-sm text-gray-600">
+          <BookOpen className="w-4 h-4 mr-2" />
+          {user.courses ? `${user.courses.length} courses enrolled` : 'No courses assigned'}
+        </div>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="flex gap-2">
+        <button
+          onClick={() => onUpdateAttendance(user.id, 'present')}
+          className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+            user.attendanceStatus === 'present'
+              ? 'bg-green-600 text-white'
+              : 'bg-green-100 text-green-700 hover:bg-green-200'
+          }`}
+        >
+          <CheckCircle className="w-4 h-4 inline mr-1" />
+          Present
+        </button>
+        <button
+          onClick={() => onUpdateAttendance(user.id, 'absent')}
+          className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+            user.attendanceStatus === 'absent'
+              ? 'bg-red-600 text-white'
+              : 'bg-red-100 text-red-700 hover:bg-red-200'
+          }`}
+        >
+          <XCircle className="w-4 h-4 inline mr-1" />
+          Absent
+        </button>
+        <button
+          onClick={() => onViewDetails(user)}
+          className="px-4 py-2 bg-blue-100 text-blue-700 rounded-md text-sm font-medium hover:bg-blue-200 transition-colors"
+        >
+          <Eye className="w-4 h-4 inline mr-1" />
+          Details
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// User Details Modal Component
+const UserDetailsModal = ({ user, isOpen, onClose }) => {
+  if (!isOpen || !user) return null;
+
+  const fullName = `${user.firstName} ${user.lastName}`;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg max-w-lg w-full max-h-[90vh] overflow-y-auto">
+        <div className="p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-bold text-gray-900">Student Details</h2>
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-gray-600 text-2xl leading-none"
+            >
+              ×
+            </button>
+          </div>
+          
+          <div className="space-y-6">
+            {/* Profile Section */}
+            <div className="flex items-center">
+              <div className="w-20 h-20 rounded-full flex items-center justify-center text-white font-semibold text-xl overflow-hidden">
+                {user.userImg ? (
+                  <img 
+                    src={user.userImg} 
+                    alt={fullName}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                    {user.firstName.charAt(0).toUpperCase()}
+                  </div>
+                )}
+              </div>
+              <div className="ml-4">
+                <h3 className="text-xl font-semibold">{fullName}</h3>
+                <p className="text-gray-600">Reg: {user.registerNumber}</p>
+                <p className="text-sm text-gray-500">{user.branch}</p>
+              </div>
+            </div>
+
+            {/* Academic Info */}
+            <div className="bg-blue-50 rounded-lg p-4">
+              <h4 className="font-semibold text-gray-900 mb-3 flex items-center">
+                <GraduationCap className="w-5 h-5 mr-2" />
+                Academic Information
+              </h4>
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <p className="text-gray-600">Branch</p>
+                  <p className="font-medium text-gray-900">{user.branch}</p>
+                </div>
+                <div>
+                  <p className="text-gray-600">Year</p>
+                  <p className="font-medium text-gray-900">{user.year} Year</p>
+                </div>
+                <div>
+                  <p className="text-gray-600">Register Number</p>
+                  <p className="font-medium text-gray-900">{user.registerNumber}</p>
+                </div>
+                <div>
+                  <p className="text-gray-600">Courses</p>
+                  <p className="font-medium text-gray-900">
+                    {user.courses ? user.courses.length : 0} enrolled
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Contact Info */}
+            <div className="border-t pt-4 space-y-4">
+              <h4 className="font-semibold text-gray-900 flex items-center">
+                <Phone className="w-5 h-5 mr-2" />
+                Contact Information
+              </h4>
+              
+              <div className="space-y-3">
+                <div className="flex items-start">
+                  <Phone className="w-5 h-5 text-gray-400 mt-0.5 mr-3" />
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">Mobile Number</p>
+                    <p className="text-sm text-gray-600">{user.mobileNumber || 'Not provided'}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Courses Section */}
+            {user.courses && user.courses.length > 0 && (
+              <div className="border-t pt-4">
+                <h4 className="font-semibold text-gray-900 mb-3 flex items-center">
+                  <BookOpen className="w-5 h-5 mr-2" />
+                  Enrolled Courses
+                </h4>
+                <div className="space-y-2">
+                  {user.courses.map((course, index) => (
+                    <div key={index} className="bg-gray-50 rounded-md p-3">
+                      <p className="font-medium text-gray-900">{course.name || course}</p>
+                      {course.code && <p className="text-sm text-gray-600">Code: {course.code}</p>}
+                      {course.credits && <p className="text-sm text-gray-600">Credits: {course.credits}</p>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Current Attendance Status */}
+            <div className="bg-gray-50 rounded-lg p-4">
+              <h4 className="font-semibold text-gray-900 mb-2">Today's Attendance</h4>
+              <div className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium ${
+                user.attendanceStatus === 'present' 
+                  ? 'bg-green-100 text-green-800' 
+                  : user.attendanceStatus === 'absent'
+                  ? 'bg-red-100 text-red-800'
+                  : 'bg-gray-100 text-gray-800'
+              }`}>
+                {user.attendanceStatus === 'present' && <CheckCircle className="w-4 h-4 mr-1" />}
+                {user.attendanceStatus === 'absent' && <XCircle className="w-4 h-4 mr-1" />}
+                {!user.attendanceStatus && <Clock className="w-4 h-4 mr-1" />}
+                {user.attendanceStatus ? user.attendanceStatus.toUpperCase() : 'NOT MARKED'}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Overall Progress Card Component
+const OverallProgressCard = ({ users }) => {
+  const getProgressStats = () => {
+    const totalStudents = users.length;
+    const presentCount = users.filter(user => user.attendanceStatus === 'present').length;
+    const absentCount = users.filter(user => user.attendanceStatus === 'absent').length;
+    const notMarkedCount = users.filter(user => !user.attendanceStatus).length;
+    
+    const presentPercentage = totalStudents > 0 ? Math.round((presentCount / totalStudents) * 100) : 0;
+    const absentPercentage = totalStudents > 0 ? Math.round((absentCount / totalStudents) * 100) : 0;
+    const notMarkedPercentage = totalStudents > 0 ? Math.round((notMarkedCount / totalStudents) * 100) : 0;
+    
+    // Branch-wise breakdown
+    const branchStats = users.reduce((acc, user) => {
+      if (!acc[user.branch]) {
+        acc[user.branch] = { total: 0, present: 0, absent: 0, notMarked: 0 };
+      }
+      acc[user.branch].total++;
+      if (user.attendanceStatus === 'present') acc[user.branch].present++;
+      else if (user.attendanceStatus === 'absent') acc[user.branch].absent++;
+      else acc[user.branch].notMarked++;
+      return acc;
+    }, {});
+    
+    // Year-wise breakdown
+    const yearStats = users.reduce((acc, user) => {
+      if (!acc[user.year]) {
+        acc[user.year] = { total: 0, present: 0, absent: 0, notMarked: 0 };
+      }
+      acc[user.year].total++;
+      if (user.attendanceStatus === 'present') acc[user.year].present++;
+      else if (user.attendanceStatus === 'absent') acc[user.year].absent++;
+      else acc[user.year].notMarked++;
+      return acc;
+    }, {});
+
+    return {
+      totalStudents,
+      presentCount,
+      absentCount,
+      notMarkedCount,
+      presentPercentage,
+      absentPercentage,
+      notMarkedPercentage,
+      branchStats,
+      yearStats
+    };
+  };
+
+  const stats = getProgressStats();
+
+  return (
+    <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900 flex items-center">
+            <BarChart3 className="w-7 h-7 mr-3 text-blue-600" />
+            Overall Progress Dashboard
+          </h2>
+          <p className="text-gray-600 mt-1">Comprehensive attendance analytics and insights</p>
+        </div>
+        <div className="text-right">
+          <p className="text-3xl font-bold text-blue-600">{stats.presentPercentage}%</p>
+          <p className="text-sm text-gray-600">Attendance Rate</p>
+        </div>
+      </div>
+
+      {/* Main Stats Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-4 text-white">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-blue-100 text-sm">Total Students</p>
+              <p className="text-2xl font-bold">{stats.totalStudents}</p>
+            </div>
+            <Users className="w-8 h-8 text-blue-200" />
+          </div>
+        </div>
+        
+        <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-4 text-white">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-green-100 text-sm">Present Today</p>
+              <p className="text-2xl font-bold">{stats.presentCount}</p>
+              <p className="text-green-100 text-xs">{stats.presentPercentage}% of total</p>
+            </div>
+            <CheckCircle className="w-8 h-8 text-green-200" />
+          </div>
+        </div>
+        
+        <div className="bg-gradient-to-r from-red-500 to-red-600 rounded-lg p-4 text-white">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-red-100 text-sm">Absent Today</p>
+              <p className="text-2xl font-bold">{stats.absentCount}</p>
+              <p className="text-red-100 text-xs">{stats.absentPercentage}% of total</p>
+            </div>
+            <XCircle className="w-8 h-8 text-red-200" />
+          </div>
+        </div>
+        
+        <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-lg p-4 text-white">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-yellow-100 text-sm">Not Marked</p>
+              <p className="text-2xl font-bold">{stats.notMarkedCount}</p>
+              <p className="text-yellow-100 text-xs">{stats.notMarkedPercentage}% of total</p>
+            </div>
+            <Clock className="w-8 h-8 text-yellow-200" />
+          </div>
+        </div>
+      </div>
+
+      {/* Progress Bar */}
+      <div className="mb-6">
+        <div className="flex justify-between items-center mb-2">
+          <h3 className="text-lg font-semibold text-gray-900">Attendance Progress</h3>
+          <span className="text-sm text-gray-600">
+            {stats.presentCount + stats.absentCount} of {stats.totalStudents} marked
+          </span>
+        </div>
+        <div className="w-full bg-gray-200 rounded-full h-3">
+          <div className="flex h-3 rounded-full overflow-hidden">
+            <div 
+              className="bg-green-500 transition-all duration-500"
+              style={{ width: `${stats.presentPercentage}%` }}
+            ></div>
+            <div 
+              className="bg-red-500 transition-all duration-500"
+              style={{ width: `${stats.absentPercentage}%` }}
+            ></div>
+            <div 
+              className="bg-yellow-500 transition-all duration-500"
+              style={{ width: `${stats.notMarkedPercentage}%` }}
+            ></div>
+          </div>
+        </div>
+        <div className="flex justify-between text-xs text-gray-600 mt-1">
+          <span>Present ({stats.presentPercentage}%)</span>
+          <span>Absent ({stats.absentPercentage}%)</span>
+          <span>Not Marked ({stats.notMarkedPercentage}%)</span>
+        </div>
+      </div>
+
+      {/* Branch & Year Analytics */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Branch-wise Stats */}
+        <div className="bg-gray-50 rounded-lg p-4">
+          <h3 className="font-semibold text-gray-900 mb-3 flex items-center">
+            <BookOpen className="w-5 h-5 mr-2" />
+            Branch-wise Attendance
+          </h3>
+          <div className="space-y-3">
+            {Object.entries(stats.branchStats).map(([branch, branchData]) => {
+              const branchPresentPercentage = branchData.total > 0 ? 
+                Math.round((branchData.present / branchData.total) * 100) : 0;
+              return (
+                <div key={branch} className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium text-gray-900">{branch}</p>
+                    <p className="text-xs text-gray-600">
+                      {branchData.present}/{branchData.total} present
+                    </p>
+                  </div>
+                  <div className="flex items-center">
+                    <div className="w-16 bg-gray-200 rounded-full h-2 mr-2">
+                      <div 
+                        className="bg-green-500 h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${branchPresentPercentage}%` }}
+                      ></div>
+                    </div>
+                    <span className="text-sm font-medium text-gray-700">
+                      {branchPresentPercentage}%
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Year-wise Stats */}
+        <div className="bg-gray-50 rounded-lg p-4">
+          <h3 className="font-semibold text-gray-900 mb-3 flex items-center">
+            <TrendingUp className="w-5 h-5 mr-2" />
+            Year-wise Attendance
+          </h3>
+          <div className="space-y-3">
+            {Object.entries(stats.yearStats).map(([year, yearData]) => {
+              const yearPresentPercentage = yearData.total > 0 ? 
+                Math.round((yearData.present / yearData.total) * 100) : 0;
+              return (
+                <div key={year} className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium text-gray-900">Year {year}</p>
+                    <p className="text-xs text-gray-600">
+                      {yearData.present}/{yearData.total} present
+                    </p>
+                  </div>
+                  <div className="flex items-center">
+                    <div className="w-16 bg-gray-200 rounded-full h-2 mr-2">
+                      <div 
+                        className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${yearPresentPercentage}%` }}
+                      ></div>
+                    </div>
+                    <span className="text-sm font-medium text-gray-700">
+                      {yearPresentPercentage}%
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Main Attendance Page Component
+const AttendancePage = () => {
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [users, setUsers] = useState([
+    {
+      id: 1,
+      firstName: 'John',
+      lastName: 'Smith',
+      registerNumber: 'CS2024001',
+      branch: 'Computer Science',
+      mobileNumber: 9876543210,
+      year: 3,
+      userImg: null, // File type - would be uploaded image
+      courses: [
+        { name: 'Data Structures', code: 'CS301', credits: 4 },
+        { name: 'Database Systems', code: 'CS302', credits: 3 },
+        { name: 'Software Engineering', code: 'CS303', credits: 4 }
+      ],
+      attendanceStatus: null
+    },
+    {
+      id: 2,
+      firstName: 'Emily',
+      lastName: 'Johnson',
+      registerNumber: 'CS2024002',
+      branch: 'Computer Science',
+      mobileNumber: 9123456789,
+      year: 3,
+      userImg: null,
+      courses: [
+        { name: 'Data Structures', code: 'CS301', credits: 4 },
+        { name: 'Database Systems', code: 'CS302', credits: 3 },
+        { name: 'Machine Learning', code: 'CS304', credits: 4 }
+      ],
+      attendanceStatus: 'present'
+    },
+    {
+      id: 3,
+      firstName: 'Michael',
+      lastName: 'Brown',
+      registerNumber: 'EC2024001',
+      branch: 'Electronics',
+      mobileNumber: 9876541230,
+      year: 2,
+      userImg: null,
+      courses: [
+        { name: 'Digital Electronics', code: 'EC201', credits: 4 },
+        { name: 'Signal Processing', code: 'EC202', credits: 3 }
+      ],
+      attendanceStatus: 'absent'
+    },
+    {
+      id: 4,
+      firstName: 'Sarah',
+      lastName: 'Davis',
+      registerNumber: 'CS2024003',
+      branch: 'Computer Science',
+      mobileNumber: 9654321078,
+      year: 4,
+      userImg: null,
+      courses: [
+        { name: 'Advanced Algorithms', code: 'CS401', credits: 4 },
+        { name: 'Cloud Computing', code: 'CS402', credits: 3 },
+        { name: 'AI & ML', code: 'CS403', credits: 4 }
+      ],
+      attendanceStatus: null
+    },
+    {
+      id: 5,
+      firstName: 'David',
+      lastName: 'Wilson',
+      registerNumber: 'ME2024001',
+      branch: 'Mechanical Engineering',
+      mobileNumber: 9543210987,
+      year: 1,
+      userImg: null,
+      courses: [
+        { name: 'Engineering Mechanics', code: 'ME101', credits: 4 },
+        { name: 'Engineering Drawing', code: 'ME102', credits: 2 }
+      ],
+      attendanceStatus: 'present'
+    },
+    {
+      id: 6,
+      firstName: 'Lisa',
+      lastName: 'Anderson',
+      registerNumber: 'EC2024002',
+      branch: 'Electronics',
+      mobileNumber: 9432109876,
+      year: 3,
+      userImg: null,
+      courses: [
+        { name: 'VLSI Design', code: 'EC301', credits: 4 },
+        { name: 'Communication Systems', code: 'EC302', credits: 3 }
+      ],
+      attendanceStatus: 'present'
+    }
+  ]);
+
+  const handleUpdateAttendance = (userId, status) => {
+    setUsers(prevUsers =>
+      prevUsers.map(user =>
+        user.id === userId
+          ? { ...user, attendanceStatus: status }
+          : user
+      )
+    );
+  };
+
+  const handleViewDetails = (user) => {
+    setSelectedUser(user);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedUser(null);
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">Student Attendance System</h1>
+          <p className="text-gray-600 flex items-center">
+            <Calendar className="w-5 h-5 mr-2" />
+            {new Date().toLocaleDateString('en-US', { 
+              weekday: 'long', 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric' 
+            })}
+            <Clock className="w-5 h-5 ml-4 mr-2" />
+            {new Date().toLocaleTimeString('en-US', { 
+              hour: '2-digit', 
+              minute: '2-digit'
+            })}
+          </p>
+        </div>
+
+        {/* Overall Progress Card */}
+        <OverallProgressCard users={users} />
+
+        {/* Students Grid */}
+        <div className="mb-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+            <Users className="w-6 h-6 mr-2" />
+            Student List
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {users.map(user => (
+              <UserCard
+                key={user.id}
+                user={user}
+                onUpdateAttendance={handleUpdateAttendance}
+                onViewDetails={handleViewDetails}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* User Details Modal */}
+        <UserDetailsModal
+          user={selectedUser}
+          isOpen={isModalOpen}
+          onClose={closeModal}
+        />
+      </div>
+    </div>
+  );
+};
+
+export default AttendancePage;
