@@ -24,7 +24,7 @@ const User=sequelize.define("User",{
     },
     mobileNumber: {
   type: DataTypes.STRING,   
-  allowNull: false
+  allowNull: true
 }
 ,
     gmail:{type:DataTypes.STRING},

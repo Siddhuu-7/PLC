@@ -26,6 +26,7 @@ Router.post("/signUp",upload.single('userImg'), addToAtttendence,async (req, res
     const NoSQL=new NOSQLUSER({userId:body.registerNumber,
       userImg:req.file?req.file.buffer:null})
     await NoSQL.save()
+    console.log("image saved")
     const imgId= await NOSQLUSER.findOne({userId:body.registerNumber},{_id:1,userId:0,userImg:0})
     body.userImg=imgId.userId
     const newUser = await partialUser.create(body);

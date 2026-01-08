@@ -95,7 +95,7 @@ Router.get("/gettodayannouncement", async (req, res) => {
 Router.get("/verify", async (req, res) => {
   try {
     const { verify, registerNumber } = req.query;
-    console.log(req.query)
+    
     const data = await partialUser.findOne({ where: { registerNumber } });
     if (!data) {
       return res.status(404).json({ msg: "User not found" });
@@ -140,6 +140,7 @@ Router.get("/verifyeduser",async(req,res)=>{
      res.status(200).json({data})
   } catch (error) {
     res.status(500).json({msg:error.message})
+    
   }
 })
 Router.delete("/delete", async (req, res) => {

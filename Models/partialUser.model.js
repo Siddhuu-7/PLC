@@ -24,7 +24,7 @@ const partialUser=sequelize.define("partialUser",{
     },
     mobileNumber: {
   type: DataTypes.STRING,   
-  allowNull: false
+  allowNull: true
 },
 
     gmail:{type:DataTypes.STRING},

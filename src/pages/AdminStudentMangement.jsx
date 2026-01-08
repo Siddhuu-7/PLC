@@ -12,7 +12,7 @@ export default function AdminUserManagement() {
         try {
                const res =  await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/admin/partialusers`);
               const mockPartialUsers=res.data.data
-
+              console.log(mockPartialUsers)
             const verfiyres=await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/admin/verifyeduser`)
              const mockVerifiedUsers =verfiyres.data.data
 
@@ -35,7 +35,7 @@ export default function AdminUserManagement() {
   const userToVerify = partialUsers.find(user => user.id === userId);
   try {
     const res = await axios.get(
-      `${import.meta.env.VITE_backend_Url}/api/admin/verify?verify=true&registerNumber=${userId}`
+      `${import.meta.env.VITE_BACKEND_URL}/api/admin/verify?verify=true&registerNumber=${userId}`
     );
     console.log(res.data);
     if (userToVerify) {

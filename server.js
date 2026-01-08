@@ -37,13 +37,21 @@ app.use("/api/questions", Test);
 app.use("/api/admin",Admin)
 app.use("/api/resource",resource)
 try {
-  sequelize.authenticate({force:true})
-    .then(() => console.log("SQL authenticated"))
-    .catch(error => console.log(error.message));
-  sequelize.sync();
+  await sequelize.authenticate();
+  console.log("✅ SQL authenticated");
+
+  const [dbResult] = await sequelize.query("SELECT DATABASE()");
+  console.log("🗄 Connected DB:", dbResult[0]["DATABASE()"]);
+
+  if (process.env.NODE_ENV !== "production") {
+    await sequelize.sync({ alter: true });
+    console.log("🛠 DB synced (dev only)");
+  }
 } catch (error) {
-  console.log("mysql:", error.message);
+  console.error("❌ MySQL error:", error.message);
+  process.exit(1);
 }
+
 
 // Add Vite or respective production middlewares
 /** @type {import('vite').ViteDevServer | undefined} */
