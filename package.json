@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "nodemon server",
+    "dev": "node server",
     "build": "npm run build:client && npm run build:server",
     "build:client": "vite build --outDir dist/client",
     "build:server": "vite build --ssr src/entry-server.jsx --outDir dist/server",
@@ -39,6 +39,7 @@
   "devDependencies": {
     "@vitejs/plugin-react": "^5.1.2",
     "cross-env": "^10.1.0",
+    "nodemon": "^3.1.11",
     "vite": "^7.2.7"
   }
 }
